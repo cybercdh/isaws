@@ -25,7 +25,7 @@ If an IP is found to be within the current list of AWS IP ranges, then details w
 ### Options
 
 ```
-Usage of iaws:
+Usage of isaws:
   -c int
     	set the concurrency level (default 50)
 ```
