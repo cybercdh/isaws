@@ -1,18 +1,14 @@
-package main
+package awschecker
 
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 )
 
-func print_usage() {
-	log.Fatalln("Expected usage: echo <ip_address> | isaws")
-}
+func IsAWSIPAddress(ip net.IP, prefixes []Prefix) ([]Prefix, error) {
 
-func IsAWSIPAddress(ip net.IP) ([]Prefix, error) {
 	matchingPrefixes := []Prefix{}
 
 	for _, prefix := range prefixes {

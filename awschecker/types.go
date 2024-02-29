@@ -1,4 +1,4 @@
-package main
+package awschecker
 
 type Prefix struct {
 	IPPrefix           string `json:"ip_prefix"`

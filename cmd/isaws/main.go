@@ -8,36 +8,35 @@ import (
 	"net"
 	"os"
 	"sync"
+
+	"github.com/cybercdh/isaws/awschecker"
 )
 
-var prefixes []Prefix
-var ips = make(chan string, 100)
-var concurrency int
-
-func init() {
-	var err error
-	prefixes, err = GetAWSPrefixes()
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
-
 func main() {
+	var concurrency int
+
 	flag.IntVar(&concurrency, "c", 50, "set the concurrency level")
 	flag.Parse()
 
+	prefixes, err := awschecker.GetAWSPrefixes()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	var wg sync.WaitGroup
+	ips := make(chan string, concurrency)
+
 	for i := 0; i < concurrency; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for ip := range ips {
-				ip := net.ParseIP(ip)
+			for ipStr := range ips {
+				ip := net.ParseIP(ipStr)
 				if ip == nil {
 					continue
 				}
 
-				matchingPrefixes, err := IsAWSIPAddress(ip)
+				matchingPrefixes, err := awschecker.IsAWSIPAddress(ip, prefixes)
 				if err != nil {
 					continue
 				}

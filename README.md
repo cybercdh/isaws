@@ -7,7 +7,7 @@ Takes a list of IP Addresses from stdin and outputs those which appear in curren
 If you have Go installed and configured (i.e. with `$GOPATH/bin` in your `$PATH`):
 
 ```
-go install github.com/cybercdh/isaws@latest
+go install github.com/cybercdh/isaws/cmd/isaws@latest
 ```
 
 ## Usage
