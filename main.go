@@ -55,18 +55,20 @@ func main() {
 		}()
 	}
 
-	// check for input piped to stdin
+	// Check for input piped to stdin
 	info, err := os.Stdin.Stat()
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
 
-	if info.Mode()&os.ModeCharDevice != 0 || (info.Mode()&os.ModeNamedPipe == 0 && info.Size() <= 0) {
+	// Check if input is not from a terminal (i.e., it's piped or redirected)
+	if info.Mode()&os.ModeCharDevice == os.ModeCharDevice {
 		print_usage()
+		return
 	}
 
-	// get user input
+	// Get user input
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		ips <- scanner.Text()
