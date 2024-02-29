@@ -23,7 +23,6 @@ func init() {
 }
 
 func main() {
-
 	flag.IntVar(&concurrency, "c", 50, "set the concurrency level")
 	flag.Parse()
 
@@ -32,52 +31,33 @@ func main() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-
-			// iterate the user input
 			for ip := range ips {
 				ip := net.ParseIP(ip)
 				if ip == nil {
 					continue
 				}
 
-				// check if IP appears in AWS CIDR range
 				matchingPrefixes, err := IsAWSIPAddress(ip)
 				if err != nil {
 					continue
 				}
 
-				// output
 				for _, prefix := range matchingPrefixes {
 					fmt.Printf("%s,%s,%s,%s,%s\n", ip, prefix.IPPrefix, prefix.Region, prefix.Service, prefix.NetworkBorderGroup)
 				}
-
 			}
 		}()
 	}
 
-	// Check for input piped to stdin
-	info, err := os.Stdin.Stat()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	// Check if input is not from a terminal (i.e., it's piped or redirected)
-	if info.Mode()&os.ModeCharDevice == os.ModeCharDevice {
-		print_usage()
-		return
-	}
-
-	// Get user input
+	// Simplified: Directly read from stdin without checking if it's piped or redirected
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		ips <- scanner.Text()
 	}
 	if err := scanner.Err(); err != nil {
-		log.Println(err)
+		log.Println("Error reading from stdin:", err)
 	}
 
-	// wait for workers
 	close(ips)
 	wg.Wait()
 }
